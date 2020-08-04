@@ -23,14 +23,50 @@ enum
     EXIT
 };
 
-typedef struct
+class Account
 {
+private:
     int accId;
     int balance;
-    char name[NAME_LEN];
-} Account;
+    char *cusName;
 
-Account accArr[100];
+public:
+    Account(int accId, int balance, char *name) : accId(accId), balance(balance)
+    {
+        cusName = new char[strlen(name) + 1];
+        stpcpy(cusName, name);
+    }
+
+    void Deposit(int money)
+    {
+        balance += money;
+    }
+
+    bool Withdraw(int money)
+    {
+        if (balance < money)
+        {
+            return false;
+        }
+
+        balance -= money;
+        return true;
+    }
+
+    void ShowInfo() const
+    {
+        cout << "AccId: " << accId << endl;
+        cout << "Name: " << cusName << endl;
+        cout << "Balance: " << balance << endl;
+    }
+
+    int GetID() const
+    {
+        return accId;
+    }
+};
+
+Account *accArr[100];
 int accNum = 0;
 
 int main(void)
@@ -92,9 +128,7 @@ void MakeAccount()
     cin >> deposit;
     cout << endl;
 
-    accArr[accNum].accId = id;
-    strcpy(accArr[accNum].name, name);
-    accArr[accNum].balance = deposit;
+    accArr[accNum] = new Account(id, deposit, name);
     accNum += 1;
 }
 
@@ -116,7 +150,7 @@ void Deposit()
         cout << "Amount to deposit: ";
         cin >> money;
 
-        accArr[idx].balance += money;
+        accArr[idx]->Deposit(money);
         cout << "Transaction has been made." << endl;
     }
 }
@@ -137,13 +171,12 @@ void Withdraw()
         cout << "Amount to withdraw: ";
         cin >> money;
 
-        if (accArr[idx].balance < money)
+        if (!accArr[idx]->Withdraw(money))
         {
             cout << "Not enough balance" << endl;
         }
         else
         {
-            accArr[idx].balance -= money;
             cout << "Transaction has been made." << endl;
         }
     }
@@ -157,9 +190,7 @@ void ShowAccInfo()
 {
     for (int i = 0; i < accNum; i++)
     {
-        cout << "AccId: " << accArr[i].accId << endl;
-        cout << "Name: " << accArr[i].name << endl;
-        cout << "Balance: " << accArr[i].balance << endl;
+        accArr[i]->ShowInfo();
     }
 }
 
@@ -167,7 +198,7 @@ int FindAccountByID(int id)
 {
     for (int i = 0; i < accNum; i++)
     {
-        if (accArr[i].accId == id)
+        if (accArr[i]->GetID() == id)
             return i;
     }
 
