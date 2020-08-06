@@ -37,6 +37,18 @@ public:
         stpcpy(cusName, name);
     }
 
+    Account(const Account &copy) : accId(copy.accId), balance(copy.balance)
+    {
+        cusName = new char[strlen(copy.cusName) + 1];
+        stpcpy(cusName, copy.cusName);
+    }
+
+    ~Account()
+    {
+        delete[] cusName;
+        cout << "Called Destructor " << this << endl;
+    }
+
     void Deposit(int money)
     {
         balance += money;
